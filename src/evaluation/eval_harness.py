@@ -2,10 +2,7 @@
 evaluation/eval_harness.py
 
 Runs RAGAS evaluation over a test question set.
-Measures: faithfulness, answer_relevancy, context_precision, context_recall.
-
-This is the piece that makes the project look serious —
-include the output table in your README.
+Measures: faithfulness, answer_relevancy, context_precision, context_recall. #MG Updated 04/20/2026
 """
 
 import json
@@ -25,10 +22,6 @@ from ragas.metrics import (
 
 from src.generation.qa_chain import FinRAGPipeline, RAGResponse
 
-
-# ---------------------------------------------------------------------------
-# Sample eval questions (finance-domain)
-# ---------------------------------------------------------------------------
 
 DEFAULT_EVAL_QUESTIONS = [
     {
@@ -52,11 +45,6 @@ DEFAULT_EVAL_QUESTIONS = [
         "ground_truth": "Goldman Sachs Asset and Wealth Management strategy focuses on managing client assets across equity, fixed income, and alternative investments, offering customized portfolio solutions to ultra-high-net-worth individuals, families, foundations, and endowments globally, combining proprietary and third-party investment offerings with personalized wealth advisory services.",
     },
 ]
-
-
-# ---------------------------------------------------------------------------
-# Evaluator
-# ---------------------------------------------------------------------------
 
 class RAGEvaluator:
     def __init__(self, pipeline: FinRAGPipeline):
@@ -96,11 +84,9 @@ class RAGEvaluator:
             except Exception as e:
                 print(f"  ✗ Failed: {q[:60]} — {e}")
 
-        # Build HuggingFace Dataset (RAGAS requirement)
         dataset = Dataset.from_list(eval_rows)
 
         metrics = [faithfulness, answer_relevancy, context_precision]
-        # context_recall requires ground_truth — only add if provided
         if any(r["ground_truth"] for r in eval_rows):
             metrics.append(context_recall)
 
@@ -133,10 +119,6 @@ class RAGEvaluator:
         print(df[metric_cols].describe().loc[["mean", "min", "max"]].round(3).to_string())
 
 
-# ---------------------------------------------------------------------------
-# CLI entry point
-# ---------------------------------------------------------------------------
-
 if __name__ == "__main__":
     import argparse
     from dotenv import load_dotenv
@@ -153,5 +135,4 @@ if __name__ == "__main__":
         with open(args.questions) as f:
             questions = json.load(f)
 
-    # You'll need a running pipeline — see notebooks/02_run_pipeline.ipynb
     print("Load your pipeline first via the notebook or main.py, then call evaluator.run()")
