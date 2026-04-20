@@ -80,7 +80,7 @@ python main.py --ui
 
 ## Evaluation Results
 
-Run `python main.py --eval` to reproduce.
+Run `python main.py --eval` to reproduce, these are my numbers from my run:
 
 | Metric              | Score |
 |---------------------|-------|
