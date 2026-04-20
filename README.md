@@ -1,17 +1,19 @@
 # FinRAG — Financial Document Q&A System
 
-A production-grade Retrieval-Augmented Generation (RAG) pipeline for querying SEC filings, earnings call transcripts, and FOMC minutes. Built as a demonstration of advanced RAG engineering patterns beyond the typical tutorial.
+Welcome to my RAG project on Financial Documents! I built this to go deeper on RAG than most tutorials go; the typical implementation of chunking a PDF, embedding it, doing a cosine similarity search and pipe it to an LLM works fine on clean data but struggles with dense financial documents where exact terminology matters. This project is my attempt to build something that actually holds up in this specific type of situation.
+
+The domain I picked is in SEC filings and earnings documents. I picked finance partly because the data is complex and unforgiving because made-up hallucinations of revenue figures are an obvious problem, and also partly because I wanted to branch out from my clinical research/product/consulting background and build something relevant to financial services.
 
 ## Architecture
 
 ```
-PDFs (10-K, 10-Q, Earnings Transcripts, FOMC Minutes)
+PDFs (10-K Filings from 2025/2024 for Fiscal Years 2024/2023)
     │
     ▼
 [Ingestion Layer]
   • PyMuPDF + pdfplumber (layout-aware extraction, fallback for scanned pages)
   • Sentence-aware chunking (SentenceSplitter, 512 tokens, 64 overlap)
-  • Metadata extraction: ticker, filing type, year, section headers
+  • Metadata: ticker, filing type, year, section headers
     │
     ▼
 [Retrieval Layer]
@@ -35,20 +37,6 @@ PDFs (10-K, 10-Q, Earnings Transcripts, FOMC Minutes)
 [UI Layer]
   • Gradio interface with metadata filter dropdowns
 ```
-
-## Key Design Decisions
-
-**Why hybrid retrieval?**
-Dense embeddings excel at semantic similarity but miss exact financial terms (e.g., "LIBOR," specific line items). BM25 catches keyword matches. RRF fuses rankings without requiring score normalization or weight tuning.
-
-**Why reranking?**
-Vector similarity scores are noisy proxies for answer relevance. A cross-encoder jointly scores (query, passage) pairs at much higher accuracy. Retrieving top-10 then reranking to top-3 gives better precision with manageable latency.
-
-**Why sentence-aware chunking?**
-Character-split chunking severs sentences mid-thought, degrading retrieval quality. `SentenceSplitter` respects sentence boundaries so each chunk is semantically coherent.
-
-**Why metadata filtering?**
-Financial Q&A is inherently scoped (JPM 2023 vs. Visa 2024). Pre-filtering by ticker/year/filing type reduces noise and keeps retrieved context on-topic.
 
 ## Setup
 
@@ -76,21 +64,15 @@ python main.py --ui
 
 ```bash
 # SEC EDGAR full-text search — no API key needed
-# Example: JPMorgan 10-K
+# I used JPMorgan's 10-K from 2025 and 2024, GS' 10-K from 2025 and Visa's 10-K from 2025.
 # https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=JPM&type=10-K
-
-# FOMC minutes — free from federalreserve.gov
-# https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
 ```
 
 ## Query Examples
 
 ```bash
 # CLI query
-python main.py --query "What were JPMorgan's net revenues in FY2023?" --ticker JPM --year 2023
-
-# With filing type filter
-python main.py --query "What inflation risks did the Fed highlight?" 
+python main.py --query "What were JPMorgan's net revenues in FY2024?" --ticker JPM --year 2024 is an example
 
 # Launch Gradio UI
 python main.py --ui
@@ -106,8 +88,6 @@ Run `python main.py --eval` to reproduce.
 | Answer Relevancy    | 0.995 |
 | Context Precision   | 0.717 |
 | Context Recall      | 1.000 |
-
-*Fill in after running eval with your document corpus.*
 
 ## Project Structure
 
