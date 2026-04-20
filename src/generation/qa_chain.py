@@ -88,7 +88,6 @@ class FinRAGPipeline:
         4. LLM generation with context
         """
 
-        # Step 1: Retrieve
         nodes = self.retriever.retrieve_with_filter(
             query=question,
             ticker=ticker,
@@ -96,17 +95,13 @@ class FinRAGPipeline:
             filing_type=filing_type,
         )
 
-        # Step 2: Rerank
         reranked = rerank(question, nodes, self.reranker)
 
-        # Step 3: Build context string
         context = self._format_context(reranked)
 
-        # Step 4: Generate
         prompt = f"Context:\n{context}\n\nQuestion: {question}"
         response = self.llm.complete(prompt)
 
-        # Step 5: Extract source metadata
         sources = [
             {
                 "filename": n.node.metadata.get("filename", ""),
