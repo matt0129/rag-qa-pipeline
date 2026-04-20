@@ -4,10 +4,10 @@ main.py
 CLI entry point for FinRAG.
 
 Usage:
-  python main.py --ingest          # Load PDFs, chunk, build index
-  python main.py --query "..."     # Ask a single question
-  python main.py --eval            # Run RAGAS evaluation
-  python main.py --ui              # Launch Gradio UI
+  python main.py --ingest          
+  python main.py --query "..."    
+  python main.py --eval          
+  python main.py --ui        
 """
 
 import argparse
