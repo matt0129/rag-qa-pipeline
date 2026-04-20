@@ -49,13 +49,11 @@ def chunk_documents(
     for doc in documents:
         nodes = splitter.get_nodes_from_documents([doc])
 
-        # Enrich each chunk with its position within the source page
         for i, node in enumerate(nodes):
             node.metadata.update({
                 "chunk_index": i,
                 "chunk_total": len(nodes),
             })
-            # Preserve source document ID for traceability
             node.metadata["source_doc_id"] = doc.id_
 
         all_nodes.extend(nodes)
