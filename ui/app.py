@@ -15,7 +15,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Lazy-import pipeline to avoid errors if not yet initialized
 _pipeline = None
 
 
@@ -58,10 +57,6 @@ def answer_question(
 
     return resp.answer, sources_md
 
-
-# ---------------------------------------------------------------------------
-# UI layout
-# ---------------------------------------------------------------------------
 
 with gr.Blocks(title="FinRAG") as demo:
     gr.Markdown(
