@@ -65,12 +65,12 @@ def _doc_hash(text: str) -> str:
 
 _SECTION_PATTERNS = [
     re.compile(r"^(ITEM\s+\d+[A-Z]?\.?\s+.{3,60})$", re.IGNORECASE | re.MULTILINE),
-    re.compile(r"^([A-Z][A-Z\s\-]{4,50})$", re.MULTILINE),   # ALL-CAPS headings
+    re.compile(r"^([A-Z][A-Z\s\-]{4,50})$", re.MULTILINE), 
 ]
 
 def _detect_section(text_block: str) -> Optional[str]:
     for pattern in _SECTION_PATTERNS:
-        m = pattern.search(text_block[:200])   # only check beginning of block
+        m = pattern.search(text_block[:200])
         if m:
             return m.group(1).strip()
     return None
@@ -127,21 +127,18 @@ def _load_single_pdf(
     docs = []
     filename = pdf_path.name
 
-    # Primary: PyMuPDF (fast, layout-aware)
     with fitz.open(str(pdf_path)) as pdf:
         total_pages = len(pdf)
 
         for page_num, page in enumerate(pdf, start=1):
             text = page.get_text("text").strip()
 
-            # Fallback: pdfplumber (better for tables)
             if len(text) < 50:
                 text = _pdfplumber_page(pdf_path, page_num - 1)
 
             if not text:
-                continue   # skip empty/image pages
+                continue  
 
-            # Clean up common PDF artifacts
             text = _clean_text(text)
 
             section = _detect_section(text)
@@ -179,9 +176,7 @@ def _pdfplumber_page(pdf_path: Path, page_index: int) -> str:
 
 def _clean_text(text: str) -> str:
     """Remove common PDF noise."""
-    # Collapse excessive whitespace
     text = re.sub(r"\n{3,}", "\n\n", text)
     text = re.sub(r"[ \t]{2,}", " ", text)
-    # Remove page numbers standing alone
     text = re.sub(r"^\s*\d{1,3}\s*$", "", text, flags=re.MULTILINE)
     return text.strip()
