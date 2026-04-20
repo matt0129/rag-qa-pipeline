@@ -48,7 +48,7 @@ pip install -r requirements.txt
 
 # 2. Configure keys
 cp .env.example .env
-# Edit .env with your OpenAI and Cohere API keys
+# Edit .env with your own OpenAI and Cohere API keys, mine are masked
 
 # 3. Add PDFs to your data/raw/ 
 # Example Naming convention: JPM_10K_2024.pdf is how I did mine
