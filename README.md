@@ -50,8 +50,8 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your OpenAI and Cohere API keys
 
-# 3. Add PDFs to data/raw/
-# Naming convention: JPM_10K_2023.pdf, VISA_earnings_transcript_Q4_2023.pdf
+# 3. Add PDFs to your data/raw/ 
+# Example Naming convention: JPM_10K_2024.pdf is how I did mine
 
 # 4. Ingest and index
 python main.py --ingest
